@@ -6,8 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
+using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Text;
+using System.Net.WebSockets;
 
 namespace ClientServerApp.Server
 {
@@ -46,6 +51,39 @@ namespace ClientServerApp.Server
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseWebSockets();
+            app.Map("/debug", (config) =>
+           {
+               config.Use(async (context, next) => {
+                   var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                   var receiveTask = Task.Run(async () =>
+                   {
+                       while(true)
+                       {
+                           var buffer = new byte[1024 * 4];
+                           var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                           var content = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                           Console.WriteLine(content);
+                       }
+                   });
+
+                   var sendTask = Task.Run(async () =>
+                   {
+                       while (true)
+                       {
+                           var input = Console.ReadLine();
+                           var buffer = Encoding.UTF8.GetBytes(input);
+                           
+                           await webSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+                       }
+                   });
+
+                   receiveTask.Wait();
+                   sendTask.Wait();
+               });
+            });
+
 
             if (env.IsDevelopment())
             {
