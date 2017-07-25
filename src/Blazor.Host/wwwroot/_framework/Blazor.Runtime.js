@@ -775,7 +775,7 @@ window['jsobject.js'] = (function () {
         }
     }
 
-    ListenForReload();
+    // ListenForReload();
 
     function DisplayErrorPage(html) {
         var frame = document.createElement('iframe');
@@ -845,7 +845,7 @@ window['jsobject.js'] = (function () {
             }
         };
 
-        var browserSupportsNativeWebAssembly = typeof WebAssembly !== 'undefined' && WebAssembly.validate;
+        var browserSupportsNativeWebAssembly = false && typeof WebAssembly !== 'undefined' && WebAssembly.validate;
         var dnaJsUrl = browserSupportsNativeWebAssembly
             ? '/_framework/wasm/dna.js'
             : '/_framework/asmjs/dna.js';

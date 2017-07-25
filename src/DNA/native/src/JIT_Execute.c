@@ -1007,7 +1007,7 @@ JIT_CALL_NATIVE_end:
 
 JIT_RETURN_start:
 	OPCODE_USE(JIT_RETURN);
-	//printf("Returned from %s() to %s()\n", pCurrentMethodState->pMethod->name, (pCurrentMethodState->pCaller)?pCurrentMethodState->pCaller->pMethod->name:"<none>");
+	printf("Returned from %s() to %s()\n", pCurrentMethodState->pMethod->name, (pCurrentMethodState->pCaller)?pCurrentMethodState->pCaller->pMethod->name:"<none>");
 	if (pCurrentMethodState->pCaller == NULL) {
 		// End of thread!
 		if (pCurrentMethodState->pMethod->pReturnType == types[TYPE_SYSTEM_INT32]) {
@@ -1200,6 +1200,9 @@ allCallStart:
 		}
 
 		pCallMethod = (tMD_MethodDef*)GET_OP();
+
+		printf("Invoking JIT_Execute %s.%s.%s", pCallMethod->pParentType->nameSpace, pCallMethod->pParentType->name, pCallMethod->name);
+
 		heapPtr = NULL;
 
 		if (op == JIT_BOX_CALLVIRT) {
@@ -1256,7 +1259,7 @@ allCallStart:
 			pCallMethod = pThisType->pVTable[vIndex];
 		}
 callMethodSet:
-		//printf("Calling method: %s\n", Sys_GetMethodDesc(pCallMethod));
+		printf("Calling method: %s\n", Sys_GetMethodDesc(pCallMethod));
 		// Set up the new method state for the called method
 		pCallMethodState = MethodState_Direct(pThread, pCallMethod, pCurrentMethodState, 0);
 		// Set up the parameter stack for the method being called

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26712.0
+VisualStudioVersion = 15.0.26720.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{202CAAE3-4937-4BE3-96E8-C16BF9C216F6}"
 	ProjectSection(SolutionItems) = preProject
@@ -44,6 +44,114 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConferencePlanner.ConferenceDTO", "samples\ConferencePlanner\ConferencePlanner.ConferenceDTO\ConferencePlanner.ConferenceDTO.csproj", "{292D832B-F681-4D83-BF32-B04813F71651}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConferencePlanner.FrontEnd", "samples\ConferencePlanner\ConferencePlanner.FrontEnd\ConferencePlanner.FrontEnd.csproj", "{028CD455-FBF5-4564-A815-88F9A7FED7FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "native", "native", "{E1A50AD3-5FC9-44E2-B655-228F3B2EAEEC}"
+	ProjectSection(SolutionItems) = preProject
+		src\DNA\native\Bugs.txt = src\DNA\native\Bugs.txt
+		src\DNA\native\build.cmd = src\DNA\native\build.cmd
+		src\DNA\native\CMakeLists.txt = src\DNA\native\CMakeLists.txt
+		src\DNA\native\js-interop.js = src\DNA\native\js-interop.js
+		src\DNA\native\Notes on debugging.txt = src\DNA\native\Notes on debugging.txt
+		src\DNA\native\README.md = src\DNA\native\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F8F93FF3-6371-4AD1-BEC1-6812450297AE}"
+	ProjectSection(SolutionItems) = preProject
+		src\DNA\native\src\ChangeLog.txt = src\DNA\native\src\ChangeLog.txt
+		src\DNA\native\src\CIL_OpCodes.h = src\DNA\native\src\CIL_OpCodes.h
+		src\DNA\native\src\CLIFile.c = src\DNA\native\src\CLIFile.c
+		src\DNA\native\src\CLIFile.h = src\DNA\native\src\CLIFile.h
+		src\DNA\native\src\Compat.h = src\DNA\native\src\Compat.h
+		src\DNA\native\src\Config.h = src\DNA\native\src\Config.h
+		src\DNA\native\src\Delegate.c = src\DNA\native\src\Delegate.c
+		src\DNA\native\src\Delegate.h = src\DNA\native\src\Delegate.h
+		src\DNA\native\src\dna.c = src\DNA\native\src\dna.c
+		src\DNA\native\src\EvalStack.h = src\DNA\native\src\EvalStack.h
+		src\DNA\native\src\Finalizer.c = src\DNA\native\src\Finalizer.c
+		src\DNA\native\src\Finalizer.h = src\DNA\native\src\Finalizer.h
+		src\DNA\native\src\Generics.c = src\DNA\native\src\Generics.c
+		src\DNA\native\src\Generics.h = src\DNA\native\src\Generics.h
+		src\DNA\native\src\Heap.c = src\DNA\native\src\Heap.c
+		src\DNA\native\src\Heap.h = src\DNA\native\src\Heap.h
+		src\DNA\native\src\InternalCall.c = src\DNA\native\src\InternalCall.c
+		src\DNA\native\src\InternalCall.h = src\DNA\native\src\InternalCall.h
+		src\DNA\native\src\JIT.c = src\DNA\native\src\JIT.c
+		src\DNA\native\src\JIT.h = src\DNA\native\src\JIT.h
+		src\DNA\native\src\JIT_Execute.c = src\DNA\native\src\JIT_Execute.c
+		src\DNA\native\src\JIT_OpCodes.h = src\DNA\native\src\JIT_OpCodes.h
+		src\DNA\native\src\JSInterop.c = src\DNA\native\src\JSInterop.c
+		src\DNA\native\src\JSInterop.h = src\DNA\native\src\JSInterop.h
+		src\DNA\native\src\License.txt = src\DNA\native\src\License.txt
+		src\DNA\native\src\MetaData.c = src\DNA\native\src\MetaData.c
+		src\DNA\native\src\MetaData.h = src\DNA\native\src\MetaData.h
+		src\DNA\native\src\MetaData_Fill.c = src\DNA\native\src\MetaData_Fill.c
+		src\DNA\native\src\MetaData_Search.c = src\DNA\native\src\MetaData_Search.c
+		src\DNA\native\src\MetaDataTables.h = src\DNA\native\src\MetaDataTables.h
+		src\DNA\native\src\MethodState.c = src\DNA\native\src\MethodState.c
+		src\DNA\native\src\MethodState.h = src\DNA\native\src\MethodState.h
+		src\DNA\native\src\PInvoke.c = src\DNA\native\src\PInvoke.c
+		src\DNA\native\src\PInvoke.h = src\DNA\native\src\PInvoke.h
+		src\DNA\native\src\PInvoke_CaseCode.h = src\DNA\native\src\PInvoke_CaseCode.h
+		src\DNA\native\src\PInvoke_TypeDef.h = src\DNA\native\src\PInvoke_TypeDef.h
+		src\DNA\native\src\RVA.c = src\DNA\native\src\RVA.c
+		src\DNA\native\src\RVA.h = src\DNA\native\src\RVA.h
+		src\DNA\native\src\Sys.c = src\DNA\native\src\Sys.c
+		src\DNA\native\src\Sys.h = src\DNA\native\src\Sys.h
+		src\DNA\native\src\System.Array.c = src\DNA\native\src\System.Array.c
+		src\DNA\native\src\System.Array.h = src\DNA\native\src\System.Array.h
+		src\DNA\native\src\System.Char.c = src\DNA\native\src\System.Char.c
+		src\DNA\native\src\System.Char.CaseConversion.h = src\DNA\native\src\System.Char.CaseConversion.h
+		src\DNA\native\src\System.Char.h = src\DNA\native\src\System.Char.h
+		src\DNA\native\src\System.Char.UC_IndexRuns.h = src\DNA\native\src\System.Char.UC_IndexRuns.h
+		src\DNA\native\src\System.Console.c = src\DNA\native\src\System.Console.c
+		src\DNA\native\src\System.Console.h = src\DNA\native\src\System.Console.h
+		src\DNA\native\src\System.DateTime.c = src\DNA\native\src\System.DateTime.c
+		src\DNA\native\src\System.DateTime.h = src\DNA\native\src\System.DateTime.h
+		src\DNA\native\src\System.Diagnostics.Debugger.c = src\DNA\native\src\System.Diagnostics.Debugger.c
+		src\DNA\native\src\System.Diagnostics.Debugger.h = src\DNA\native\src\System.Diagnostics.Debugger.h
+		src\DNA\native\src\System.Enum.c = src\DNA\native\src\System.Enum.c
+		src\DNA\native\src\System.Enum.h = src\DNA\native\src\System.Enum.h
+		src\DNA\native\src\System.Environment.c = src\DNA\native\src\System.Environment.c
+		src\DNA\native\src\System.Environment.h = src\DNA\native\src\System.Environment.h
+		src\DNA\native\src\System.GC.c = src\DNA\native\src\System.GC.c
+		src\DNA\native\src\System.GC.h = src\DNA\native\src\System.GC.h
+		src\DNA\native\src\System.IO.FileInternal.c = src\DNA\native\src\System.IO.FileInternal.c
+		src\DNA\native\src\System.IO.FileInternal.h = src\DNA\native\src\System.IO.FileInternal.h
+		src\DNA\native\src\System.Math.c = src\DNA\native\src\System.Math.c
+		src\DNA\native\src\System.Math.h = src\DNA\native\src\System.Math.h
+		src\DNA\native\src\System.Net.Dns.c = src\DNA\native\src\System.Net.Dns.c
+		src\DNA\native\src\System.Net.Dns.h = src\DNA\native\src\System.Net.Dns.h
+		src\DNA\native\src\System.Net.Sockets.Socket.c = src\DNA\native\src\System.Net.Sockets.Socket.c
+		src\DNA\native\src\System.Net.Sockets.Socket.h = src\DNA\native\src\System.Net.Sockets.Socket.h
+		src\DNA\native\src\System.Object.c = src\DNA\native\src\System.Object.c
+		src\DNA\native\src\System.Object.h = src\DNA\native\src\System.Object.h
+		src\DNA\native\src\System.Reflection.MethodBase.h = src\DNA\native\src\System.Reflection.MethodBase.h
+		src\DNA\native\src\System.Reflection.MethodInfo.h = src\DNA\native\src\System.Reflection.MethodInfo.h
+		src\DNA\native\src\System.Reflection.PropertyInfo.h = src\DNA\native\src\System.Reflection.PropertyInfo.h
+		src\DNA\native\src\System.Runtime.CompilerServices.RuntimeHelpers.c = src\DNA\native\src\System.Runtime.CompilerServices.RuntimeHelpers.c
+		src\DNA\native\src\System.Runtime.CompilerServices.RuntimeHelpers.h = src\DNA\native\src\System.Runtime.CompilerServices.RuntimeHelpers.h
+		src\DNA\native\src\System.RuntimeType.c = src\DNA\native\src\System.RuntimeType.c
+		src\DNA\native\src\System.RuntimeType.h = src\DNA\native\src\System.RuntimeType.h
+		src\DNA\native\src\System.String.c = src\DNA\native\src\System.String.c
+		src\DNA\native\src\System.String.h = src\DNA\native\src\System.String.h
+		src\DNA\native\src\System.Threading.Interlocked.c = src\DNA\native\src\System.Threading.Interlocked.c
+		src\DNA\native\src\System.Threading.Interlocked.h = src\DNA\native\src\System.Threading.Interlocked.h
+		src\DNA\native\src\System.Threading.Monitor.c = src\DNA\native\src\System.Threading.Monitor.c
+		src\DNA\native\src\System.Threading.Monitor.h = src\DNA\native\src\System.Threading.Monitor.h
+		src\DNA\native\src\System.Threading.Thread.c = src\DNA\native\src\System.Threading.Thread.c
+		src\DNA\native\src\System.Threading.Thread.h = src\DNA\native\src\System.Threading.Thread.h
+		src\DNA\native\src\System.Type.c = src\DNA\native\src\System.Type.c
+		src\DNA\native\src\System.Type.h = src\DNA\native\src\System.Type.h
+		src\DNA\native\src\System.ValueType.c = src\DNA\native\src\System.ValueType.c
+		src\DNA\native\src\System.ValueType.h = src\DNA\native\src\System.ValueType.h
+		src\DNA\native\src\System.WeakReference.c = src\DNA\native\src\System.WeakReference.c
+		src\DNA\native\src\System.WeakReference.h = src\DNA\native\src\System.WeakReference.h
+		src\DNA\native\src\Thread.c = src\DNA\native\src\Thread.c
+		src\DNA\native\src\Thread.h = src\DNA\native\src\Thread.h
+		src\DNA\native\src\Type.c = src\DNA\native\src\Type.c
+		src\DNA\native\src\Type.h = src\DNA\native\src\Type.h
+		src\DNA\native\src\Types.h = src\DNA\native\src\Types.h
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -144,6 +252,8 @@ Global
 		{B1FD894F-DED9-4C4F-9703-2A5211BC1060} = {2B5E69A1-0979-46AA-B7B1-9586D455D167}
 		{292D832B-F681-4D83-BF32-B04813F71651} = {2B5E69A1-0979-46AA-B7B1-9586D455D167}
 		{028CD455-FBF5-4564-A815-88F9A7FED7FC} = {2B5E69A1-0979-46AA-B7B1-9586D455D167}
+		{E1A50AD3-5FC9-44E2-B655-228F3B2EAEEC} = {0FCBC715-108E-49BA-A5C6-CF21D22874B1}
+		{F8F93FF3-6371-4AD1-BEC1-6812450297AE} = {E1A50AD3-5FC9-44E2-B655-228F3B2EAEEC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {70729D6F-492C-4E7C-8C0F-D3D0EA7544AB}

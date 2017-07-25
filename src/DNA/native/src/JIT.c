@@ -295,7 +295,7 @@ static U32* JITit(tMD_MethodDef *pMethodDef, U8 *pCIL, U32 codeSize, tParameter 
 		pJITOffsets[cilOfs] = ops.ofs;
 
 		op = pCIL[cilOfs++];
-		//printf("Opcode: 0x%02x\n", op);
+		// printf("Opcode: 0x%02x\n", op);
 
 		switch (op) {
 			case CIL_NOP:
@@ -556,6 +556,9 @@ cilCallVirtConstrained:
 
 					u32Value = GetUnalignedU32(pCIL, &cilOfs);
 					pCallMethod = MetaData_GetMethodDefFromDefRefOrSpec(pMetaData, u32Value, pMethodDef->pParentType->ppClassTypeArgs, pMethodDef->ppMethodTypeArgs);
+
+					printf("Invoking %s", pCallMethod->name);
+
 					if (pCallMethod->isFilled == 0) {
 						tMD_TypeDef *pTypeDef;
 						
@@ -652,6 +655,8 @@ cilCallVirtConstrained:
 						}
 					}
 					PushPTR(pCallMethod);
+
+					printf("Invoking %s.%s.%s", pCallMethod->pParentType->nameSpace, pCallMethod->pParentType->name, pCallMethod->name);
 
 					if (pCallMethod->pReturnType != NULL) {
 						PushStackType(pCallMethod->pReturnType);
