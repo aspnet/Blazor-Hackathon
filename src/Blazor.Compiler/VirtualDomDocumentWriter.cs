@@ -17,6 +17,7 @@ namespace RazorRenderer
         private CodeTarget _target;
         private CSharpRenderingContext _context;
         private IDictionary<string, string> _tagNamesToSourceFiles;
+        private IDictionary<string, string> _sourceFileToModel;
         private readonly static Regex _incompleteAttributeRegex = new Regex(@"\s(?<name>[a-z0-9\.\-:_]+)\s*\=\s*$");
 
         readonly static string[] voidElements = new[]
@@ -24,11 +25,13 @@ namespace RazorRenderer
             "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"
         };
 
-        public VirtualDomDocumentWriter(CodeTarget target, CSharpRenderingContext context, IDictionary<string, string> tagNamesToSourceFiles)
+        public VirtualDomDocumentWriter(CodeTarget target, CSharpRenderingContext context, IDictionary<string, string> tagNamesToSourceFiles, IDictionary<string, string> sourceFileToModel)
         {
             _target = target;
             _context = context;
             _tagNamesToSourceFiles = tagNamesToSourceFiles;
+            _sourceFileToModel = sourceFileToModel;
+
         }
 
         public override void WriteDocument(DocumentIRNode node)
@@ -38,7 +41,7 @@ namespace RazorRenderer
                 throw new ArgumentNullException(nameof(node));
             }
 
-            var visitor = new Visitor(_target, _context, _tagNamesToSourceFiles);
+            var visitor = new Visitor(_target, _context, _tagNamesToSourceFiles, _sourceFileToModel);
 
             _context.BasicWriter = new RuntimeBasicWriter();
             _context.TagHelperWriter = new RuntimeTagHelperWriter();
@@ -51,6 +54,8 @@ namespace RazorRenderer
             private readonly CSharpRenderingContext _context;
             private readonly CodeTarget _target;
             private readonly IDictionary<string, string> _tagNamesToSourceFiles;
+            private readonly IDictionary<string, string> _sourceFileToModel;
+
             private CSharpRenderingContext Context => _context;
             private string _unconsumedHtml;
 
@@ -61,11 +66,12 @@ namespace RazorRenderer
 
             private int _sourceSequence;
 
-            public Visitor(CodeTarget target, CSharpRenderingContext context, IDictionary<string, string> tagNamesToSourceFiles)
+            public Visitor(CodeTarget target, CSharpRenderingContext context, IDictionary<string, string> tagNamesToSourceFiles, IDictionary<string, string> sourceFileToModel)
             {
                 _target = target;
                 _context = context;
                 _tagNamesToSourceFiles = tagNamesToSourceFiles;
+                _sourceFileToModel = sourceFileToModel;
             }
 
             public void RenderChildren(RazorIRNode node)

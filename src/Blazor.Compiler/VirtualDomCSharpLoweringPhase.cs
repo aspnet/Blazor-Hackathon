@@ -22,7 +22,9 @@ namespace RazorRenderer
             var irDoc = codeDocument.GetIRDocument();
             irDoc.Target = new VirtualDomTarget(
                 irDoc.Target,
-                codeDocument.Items["tagNamesToSourceFiles"] as IDictionary<string, string>);
+                codeDocument.Items["tagNamesToSourceFiles"] as IDictionary<string, string>,
+                codeDocument.Items["sourceFileToModel"] as IDictionary<string, string>);
+
             _defaultCSharpLoweringPhase.Execute(codeDocument);
         }
     }

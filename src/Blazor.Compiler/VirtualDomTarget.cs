@@ -11,17 +11,19 @@ namespace RazorRenderer
     {
         private CodeTarget _defaultTarget;
         private IDictionary<string, string> _tagNamesToSourceFiles;
+        private IDictionary<string, string> _sourceFileToModel;
 
-        public VirtualDomTarget(CodeTarget defaultTarget, IDictionary<string, string> tagNamesToSourceFiles)
+        public VirtualDomTarget(CodeTarget defaultTarget, IDictionary<string, string> tagNamesToSourceFiles, IDictionary<string, string> sourceFileToModel)
         {
             _defaultTarget = defaultTarget;
             _tagNamesToSourceFiles = tagNamesToSourceFiles;
+            _sourceFileToModel = sourceFileToModel;
         }
 
         public override DocumentWriter CreateWriter(CSharpRenderingContext context)
         {
             var defaultWriter = _defaultTarget.CreateWriter(context);
-            return new VirtualDomDocumentWriter(this, context, _tagNamesToSourceFiles);
+            return new VirtualDomDocumentWriter(this, context, _tagNamesToSourceFiles, _sourceFileToModel);
         }
 
         public override TExtension GetExtension<TExtension>()

@@ -1,9 +1,11 @@
-﻿<h1>Counter</h1>
+﻿@model Hello
+
+<h1>Counter</h1>
 
 <p>This is a simple example of a component.</p>
 
 <p>
-    Current count: <strong>@currentCount</strong> &nbsp;
+    Current count: <strong>@Model.AnotherProperty</strong> &nbsp;
     <button @onclick(IncrementCount)>Increment</button>
 </p>
 
@@ -24,11 +26,22 @@
         }
         ViewData["hello"] = (int) ViewData["hello"] + 1;
     }
+    int asdf()
+    {
+
+        return 5;
+    }
 
     void OnResetCounter()
     {
         currentCount = (int)ViewData["hello"];
 
         Render();
+    }
+
+    public class Hello
+    {
+        public int MyProperty { get; set; }
+        public string AnotherProperty { get; set; }
     }
 }

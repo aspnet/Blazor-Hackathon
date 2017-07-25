@@ -50,10 +50,18 @@ namespace RazorRenderer
                     classNode.Name = RazorComponent.GetViewClassName(rootDir, codeDoc.Source.FileName);
                     if (!string.IsNullOrEmpty((string)codeDoc.Items["DetectedBaseClass"]))
                     {
-                        classNode.BaseType = (string)codeDoc.Items["DetectedBaseClass"];
+                        // UBER HACK
+                        if (codeDoc.Items["DetectedModel"] != null)
+                        {
+                            classNode.BaseType = $"{(string)codeDoc.Items["DetectedBaseClass"]}<{(string)codeDoc.Items["DetectedModel"]}>";
+                        }
+                        else
+                        {
+                            classNode.BaseType = (string)codeDoc.Items["DetectedBaseClass"];
+                        }
                     }
 
-                    AddIComponentRazorViewFactoryImplementation(classNode);
+                    AddIComponentRazorViewFactoryImplementation(classNode, codeDoc);
 
                     var layoutProperty = new CSharpStatementIRNode
                     {
@@ -102,7 +110,7 @@ namespace RazorRenderer
             }
         }
 
-        private static void AddIComponentRazorViewFactoryImplementation(ClassDeclarationIRNode classNode)
+        private static void AddIComponentRazorViewFactoryImplementation(ClassDeclarationIRNode classNode, RazorCodeDocument codeDoc)
         {
             // The Activator.CreateInstance feature that I added to the DNA runtime is very basic and doesn't
             // actually invoke the default constructor of the type being created. It just allocates memory for
@@ -122,30 +130,50 @@ namespace RazorRenderer
             var methodStatement = new CSharpStatementIRNode { Parent = classNode, Source = null };
             classNode.Children.Add(methodStatement);
 
-            methodStatement.Children.Add(new RazorIRToken
+            var model = codeDoc.Items["DetectedModel"];
+            string content = "";
+            if (model != null)
+            {
+                content = $@"Model = new {model}();";
+            }
+            var razorToken = new RazorIRToken
             {
                 Kind = RazorIRToken.TokenKind.CSharp,
                 Parent = classNode,
                 Content = $@"
                     {typeof(RazorComponent).FullName} {typeof(IRazorComponentFactory).FullName}.{nameof(IRazorComponentFactory.Instantiate)}()
                     {{
+                        {content}  
                         return new {classNode.Name}();
                     }}"
-            });
+            };
+            methodStatement.Children.Add(razorToken);
         }
 
         static IList<SyntaxTree> GetSyntaxTrees(RazorEngine engine, string rootDir, string[] filenames)
         {
             var codeDocs = GetCodeDocuments(rootDir, filenames);
+
+            // Tag names
             var tagNamesToSourceFiles = codeDocs
                 .Where(cd => !string.IsNullOrEmpty(cd.Items["DetectedTagName"] as string))
                 .ToDictionary(
                     cd => cd.Items["DetectedTagName"] as string,
                     cd => "./" + MakeRelativePath(rootDir, cd.Source.FileName).Replace('\\', '/'));
 
+
+            // models
+            // if there is an underlying model, make sure we reference it?
+
+            // TODO this mapping may need to be reversed. Also DetectedModel may need to reference the correct model
+            var sourceFileToModel = codeDocs.Where(cd => !string.IsNullOrEmpty(cd.Items["DetectedModel"] as string))
+                .ToDictionary(cd => "./" + MakeRelativePath(rootDir, cd.Source.FileName).Replace('\\', '/'),
+                cd => cd.Items["DetectedModel"] as string);
+
             foreach (var codeDoc in codeDocs)
             {
                 codeDoc.Items["tagNamesToSourceFiles"] = tagNamesToSourceFiles;
+                codeDoc.Items["sourceFileToModel"] = sourceFileToModel;
                 engine.Process(codeDoc);
             }
 
@@ -224,6 +252,7 @@ namespace RazorRenderer
         {
             string detectedLayout = null;
             string detectedTagName = null;
+            string detectedModel = null;
             using (var ms = new MemoryStream())
             {
                 using (var sw = new StreamWriter(ms))
@@ -256,7 +285,14 @@ namespace RazorRenderer
                             continue;
                         }
 
-                        var tagNameRegex = new Regex("^\\s*\\@TagName\\(\\s*\\\"([^\\\"]+)\\\"\\s*\\)");
+                        const string modelLinePrefix = "@model ";
+                        if (line.StartsWith(modelLinePrefix))
+                        {
+                            detectedModel = line.Substring(modelLinePrefix.Length);
+                            continue;
+                        }
+
+                        var tagNameRegex = new Regex("^\\s*\\@TagName\\(\\s*\\\"([^\\\"]+)\\\"\\s*\\)", RegexOptions.None, TimeSpan.FromSeconds(1));
                         var tagNameMatch = tagNameRegex.Match(line);
                         if (tagNameMatch.Success)
                         {
@@ -264,7 +300,6 @@ namespace RazorRenderer
                             continue;
                         }
 
-                        sw.WriteLine(line);
                     }
                     sw.Flush();
                     ms.Position = 0;
@@ -273,6 +308,7 @@ namespace RazorRenderer
                     var codeDoc = RazorCodeDocument.Create(sourceDoc);
                     codeDoc.Items["DetectedLayout"] = detectedLayout;
                     codeDoc.Items["DetectedTagName"] = detectedTagName;
+                    codeDoc.Items["DetectedModel"] = detectedModel;
                     codeDoc.Items["DetectedBaseClass"] = lastInheritsLine;
                     codeDoc.Items["UsingNamespaces"] = usingNamespaces;
 
@@ -350,10 +386,12 @@ namespace RazorRenderer
                 {
                     Console.WriteLine(error.ToString());
                 }
+                compilation.Emit(outputAssemblyName + ".dll");
                 throw new InvalidOperationException(string.Join(Environment.NewLine, errors.Select(e => e.ToString()).ToArray()));
             }
 
             // Success
+            compilation.Emit(outputAssemblyName + ".dll");
             compilation.Emit(outputStream);
         }
     }
