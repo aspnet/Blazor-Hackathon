@@ -387,8 +387,19 @@ namespace RazorRenderer
                 throw new InvalidOperationException(string.Join(Environment.NewLine, errors.Select(e => e.ToString()).ToArray()));
             }
 
+            IEnumerable<ResourceDescription> metadataResources = null;
+
             // Success
-            compilation.Emit(outputStream, pdbStream);
+            compilation.Emit(outputStream, pdbStream, manifestResources: metadataResources);
+        }
+
+        private IEnumerable<ResourceDescription> GetMetadataResources(CSharpCompilation compilation)
+        {
+            var assembly = compilation.Assembly;
+
+
+            
+            
         }
     }
 }
