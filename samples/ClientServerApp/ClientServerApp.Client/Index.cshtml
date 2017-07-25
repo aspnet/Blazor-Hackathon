@@ -1,7 +1,24 @@
-﻿@section Scripts {
+﻿@using System.Reflection;
+@section Scripts {
     <br />
     <h6>This is from RenderSection.</h6>
 }
 
 <h1>Hello, world!</h1>
 <p>Welcome to your new single-page application.</p>
+
+@{
+    var myPropertyInfo = typeof(ClientServerApp.Client.Hello).GetMember("MyProperty").First();
+
+    var methodInfo = Type.GetType("System.Reflection.MyCustomAttributeExtensions").GetMethod("GetMyCustomAttributes");
+    var attributes = (IEnumerable<Attribute>)methodInfo.Invoke(null, new[] { myPropertyInfo });
+
+    <h2>Hello.MyProperty attributes</h2>
+    <ul>
+        @foreach (var attribute in attributes)
+        {
+        <li>@attributes.First().GetType().Name</li>
+        }
+    </ul>
+}
+

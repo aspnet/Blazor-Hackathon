@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Razor.Language;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Emit;
+using System.Text;
 
 namespace RazorRenderer
 {
@@ -376,6 +377,9 @@ namespace RazorRenderer
                 syntaxTrees: syntaxTrees,
                 references: allReferences,
                 options: compilationOptions);
+
+            AddGetAttributesExtensionMethod(compilation);
+
             var errors = compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error);
 
             if (errors.Any())
@@ -387,19 +391,131 @@ namespace RazorRenderer
                 throw new InvalidOperationException(string.Join(Environment.NewLine, errors.Select(e => e.ToString()).ToArray()));
             }
 
-            IEnumerable<ResourceDescription> metadataResources = null;
-
             // Success
-            compilation.Emit(outputStream, pdbStream, manifestResources: metadataResources);
+            compilation.Emit(outputStream, pdbStream);
         }
 
-        private IEnumerable<ResourceDescription> GetMetadataResources(CSharpCompilation compilation)
+        private static void AddGetAttributesExtensionMethod(CSharpCompilation compilation)
         {
-            var assembly = compilation.Assembly;
+            var csharp = new StringBuilder();
 
+            csharp.Append(
+@"namespace System.Reflection 
+{
+    using System.Collections.Generic;
 
-            
-            
+    public static class MyCustomAttributeExtensions
+    {
+"
+            );
+
+            AddTypeAttributes(csharp, compilation);
+            AddTypeMemberAttributes(csharp, compilation);
+
+            csharp.Append(
+@"      public static IEnumerable<Attribute> GetMyCustomAttributes(this MethodInfo element)
+        {
+            if (element.MemberType == MemberTypes.TypeInfo)
+            {
+                return _typeAttributes[element.DeclaringType];
+            }
+            else
+            {
+                return _memberAttributes[element.DeclaringType][element.Name];
+            }
         }
     }
+}
+"
+            );
+
+            var csharpString = csharp.ToString();
+            var syntaxTree = CSharpSyntaxTree.ParseText(csharpString);
+            compilation.AddSyntaxTrees(syntaxTree);
+        }
+
+        private static void AddTypeAttributes(StringBuilder csharp, CSharpCompilation compilation)
+        {
+            csharp.Append(
+@"      private static IDictionary<Type, IEnumerable<Attribute>> _typeAttributes = 
+            new Dictionary<Type, IEnumerable<Attribute>>()
+        {
+"
+            );
+
+
+            csharp.Append(
+@"      };
+"
+            );
+        }
+
+        private static void AddTypeMemberAttributes(StringBuilder csharp, CSharpCompilation compilation)
+        {
+            csharp.Append(
+@"      private static IDictionary<Type, IDictionary<string, IEnumerable<Attribute>>> _memberAttributes = 
+            new Dictionary<Type, IDictionary<string, IEnumerable<Attribute>>>()
+        {
+            [typeof(ClientServerApp.Client.Hello)] = new Dictionary<string, IEnumerable<Attribute>>()
+            {
+                [""MyProperty""] = new[] 
+                {
+                    new System.ComponentModel.DataAnnotations.RequiredAttribute()
+                }
+            }
+"
+            );
+
+
+            csharp.Append(
+@"      };
+"
+            );
+        }
+
+        private static void AddTypeAttributes(StringBuilder csharp, CSharpCompilation compilation, IAssemblySymbol assembly)
+        {
+            foreach (var typeName in assembly.TypeNames)
+            {
+                var typeSymbol = compilation.GetTypeByMetadataName(typeName);
+                var attributeData = typeSymbol.GetAttributes();
+                foreach (var attribute in attributeData)
+                {
+                    
+                }
+            }
+        }
+    }
+
+    //public static class MyCustomAttributeExtensions
+    //{
+    //    private static IDictionary<Type, IEnumerable<Attribute>> _typeAttributes =
+    //          new Dictionary<Type, IEnumerable<Attribute>>()
+    //    {
+    //    };
+
+    //    private static IDictionary<Type, IDictionary<string, IEnumerable<Attribute>>> _memberAttributes =
+    //          new Dictionary<Type, IDictionary<string, IEnumerable<Attribute>>>()
+    //    {
+    //        [typeof(ClientServerApp.Client.Hello)] = new Dictionary<string, IEnumerable<Attribute>>()
+    //        {
+    //            ["MyProperty"] = new[]
+    //            {
+    //            new System.ComponentModel.DataAnnotations.RequiredAttribute()
+    //            }
+    //        }
+    //    };
+
+    //    public static IEnumerable<Attribute> GetMyCustomAttributes(this MethodInfo element)
+    //    {
+    //        if (element.MemberType == MemberTypes.TypeInfo)
+    //        {
+    //            return _typeAttributes[element.DeclaringType];
+    //        }
+    //        else
+    //        {
+    //            return _memberAttributes[element.DeclaringType][element.Name];
+    //        }
+    //    }
+    //}
 }
