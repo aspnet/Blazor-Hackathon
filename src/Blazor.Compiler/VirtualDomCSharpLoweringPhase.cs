@@ -20,6 +20,9 @@ namespace RazorRenderer
         public void Execute(RazorCodeDocument codeDocument)
         {
             var irDoc = codeDocument.GetIRDocument();
+            if (codeDocument.Source.FileName.Contains("Index")) {
+                irDoc = codeDocument.GetIRDocument();
+            }
             irDoc.Target = new VirtualDomTarget(
                 irDoc.Target,
                 codeDocument.Items["tagNamesToSourceFiles"] as IDictionary<string, string>);

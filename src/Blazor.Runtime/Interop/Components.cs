@@ -11,6 +11,7 @@ namespace Blazor.Interop
     {
         public static int InstantiateComponent(string descriptor)
         {
+            Console.WriteLine("Neww: instantiate called " + descriptor);
             // This code path is followed for invocations from the JS side during client-side execution
             var parsed = MiniJSON.Json.Deserialize(descriptor) as Dictionary<string, object>;
             var elementRef = (string)parsed["elementRef"];
@@ -23,6 +24,7 @@ namespace Blazor.Interop
 
         public static Component InstantiateAndMountComponent(string elementRef, Component parentComponent, int vdomItemIndex)
         {
+            Console.WriteLine("Neww: InstantiateAndMount called " + elementRef + " with index " + vdomItemIndex);
             // This code path is reached directly during server-side execution (and is called by the client-side code path above)
             var newComponent = parentComponent
                 .InstantiateAndRegisterChildComponent(vdomItemIndex);
