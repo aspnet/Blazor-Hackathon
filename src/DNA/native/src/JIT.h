@@ -46,7 +46,15 @@ struct tCombinedOpcodesMem_ {
 };
 #endif
 
+typedef struct tDT_ tDT;
+struct tDT_ {
+	char *name;
+	U32 **instAddr;
+};
+
 struct tJITted_ {
+	// DebugTable
+	tDT DT;
 	// The JITted opcodes
 	U32 *pOps;
 	// The maximum size of the evaluation stack

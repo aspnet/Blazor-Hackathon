@@ -53,12 +53,6 @@ struct tOps_ {
 	U32 ofs;
 };
 
-typedef struct tDT_ tDT;
-struct tDT_ {
-	char *name;
-	U32 **instAddr;
-};
-
 typedef struct tOpsRet_ tOpsRet;
 struct tOpsRet_ {
 	U32 *tOps;
@@ -1831,13 +1825,14 @@ void JIT_Prepare(tMD_MethodDef *pMethodDef, U32 genCombinedOpcodes) {
 	// JIT the CIL code
 	tOpsRet retVal = JITit(pMethodDef, pCIL, codeSize, pLocals, pJITted, genCombinedOpcodes);
 	pJITted->pOps = retVal.tOps;
+	pJITted->DT = retVal.tDT;
 
-	printf("IL to inst addr table for %s\n", retVal.tDT.name);
+	//printf("IL to inst addr table for %s\n", retVal.tDT.name);
 
-	for (int i = 0; i < codeSize; i++)
-	{
-		printf("IL offset: %x inst: 0x%08x\n", i, retVal.tDT.instAddr[i]);
-	}
+	//for (int i = 0; i < codeSize; i++)
+	//{
+	//	printf("IL offset: %x inst: 0x%08x\n", i, retVal.tDT.instAddr[i]);
+	//}
 
 	free(pLocals);
 }
