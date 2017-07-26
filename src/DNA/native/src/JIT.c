@@ -53,6 +53,18 @@ struct tOps_ {
 	U32 ofs;
 };
 
+typedef struct tDT_ tDT;
+struct tDT_ {
+	char *name;
+	U32 **instAddr;
+};
+
+typedef struct tOpsRet_ tOpsRet;
+struct tOpsRet_ {
+	U32 *tOps;
+	tDT tDT;
+};
+
 typedef struct tTypeStack_ tTypeStack;
 struct tTypeStack_ {
 	tMD_TypeDef **ppTypes;
@@ -128,6 +140,8 @@ static void PushU32_(tOps *pOps, U32 v) {
 //		printf("a.pOps->p = 0x%08x size=%d\n", pOps->p, pOps->capacity * sizeof(U32));
 		pOps->p = realloc(pOps->p, pOps->capacity * sizeof(U32));
 	}
+
+	//printf("a.pOps->p + ofs = 0x%08x ofs=%d v=%d\n", pOps->p + pOps->ofs, pOps->ofs, v);
 	pOps->p[pOps->ofs++] = v;
 }
 
@@ -229,7 +243,7 @@ static U32 GenCombined(tOps *pOps, tOps *pIsDynamic, U32 startOfs, U32 count, U3
 }
 #endif
 
-static U32* JITit(tMD_MethodDef *pMethodDef, U8 *pCIL, U32 codeSize, tParameter *pLocals, tJITted *pJITted, U32 genCombinedOpcodes) {
+static tOpsRet JITit(tMD_MethodDef *pMethodDef, U8 *pCIL, U32 codeSize, tParameter *pLocals, tJITted *pJITted, U32 genCombinedOpcodes) {
 	U32 maxStack = pJITted->maxStack;
 	U32 i;
 	U32 cilOfs;
@@ -253,6 +267,9 @@ static U32* JITit(tMD_MethodDef *pMethodDef, U8 *pCIL, U32 codeSize, tParameter 
 	tMD_TypeDef *pTypeA, *pTypeB;
 	PTR pMem;
 	tMetaData *pMetaData;
+	tDT DT;
+	char* targetMethod = "Main";
+	int targetOffset = 0xb;
 
 	pMetaData = pMethodDef->pMetaData;
 	pJITOffsets = malloc(codeSize * sizeof(U32));
@@ -262,6 +279,8 @@ static U32* JITit(tMD_MethodDef *pMethodDef, U8 *pCIL, U32 codeSize, tParameter 
 	typeStack.maxBytes = 0;
 	typeStack.ofs = 0;
 	typeStack.ppTypes = malloc(maxStack * sizeof(tMD_TypeDef*));
+	DT.instAddr = calloc(codeSize, sizeof(U32*));
+	DT.name = pMethodDef->name;
 
 	// Set up all exception 'catch' blocks with the correct stack information,
 	// So they'll have just the exception type on the stack when entered
@@ -291,11 +310,14 @@ static U32* JITit(tMD_MethodDef *pMethodDef, U8 *pCIL, U32 codeSize, tParameter 
 	do {
 		U8 op;
 
+		int curOfs = cilOfs;
+		int *curInstAddr = ops.p + ops.ofs;
+
 		// Set the JIT offset for this CIL opcode
 		pJITOffsets[cilOfs] = ops.ofs;
 
 		op = pCIL[cilOfs++];
-		//printf("Opcode: 0x%02x\n", op);
+		//printf("Opcode: 0x%02x offset:%d\n", op, cilOfs-1);
 
 		switch (op) {
 			case CIL_NOP:
@@ -1477,6 +1499,8 @@ cilLeave:
 				Crash("JITit(): JITter cannot handle op-code: 0x%02x", op);
 		}
 
+		DT.instAddr[curOfs] = curInstAddr;
+
 	} while (cilOfs < codeSize);
 
 	// Apply branch offset fixes
@@ -1609,8 +1633,32 @@ combineDone:
 	pJITted->opsMemSize += u32Value;
 	DeleteOps(isDynamic);
 #endif
+	
+	//for (int i = 0; i < codeSize; i++)
+	//{
+	//	printf("fake IL offset: %x inst: 0x%08x\n", i, DT.instAddr[i]);
+	//}
 
-	return pFinalOps;
+	int instOffset = pFinalOps - ops.p;
+
+	for (int i = 0; i < codeSize; i++)
+	{
+		if (DT.instAddr[i] != 0)
+		{
+			DT.instAddr[i] += instOffset;
+		}
+
+		if (strcmp(pMethodDef->name, targetMethod) == 0 && targetOffset == i)
+		{
+			printf("Breakpoint specified for %s: 0x%x which corresponds to instruction 0x%08x\n", targetMethod, targetOffset, DT.instAddr[i]);
+		}
+	}
+
+	tOpsRet retVal;
+	retVal.tOps = pFinalOps;
+	retVal.tDT = DT;
+
+	return retVal;
 }
 
 // Prepare a method for execution
@@ -1781,7 +1829,15 @@ void JIT_Prepare(tMD_MethodDef *pMethodDef, U32 genCombinedOpcodes) {
 	}
 
 	// JIT the CIL code
-	pJITted->pOps = JITit(pMethodDef, pCIL, codeSize, pLocals, pJITted, genCombinedOpcodes);
+	tOpsRet retVal = JITit(pMethodDef, pCIL, codeSize, pLocals, pJITted, genCombinedOpcodes);
+	pJITted->pOps = retVal.tOps;
+
+	printf("IL to inst addr table for %s\n", retVal.tDT.name);
+
+	for (int i = 0; i < codeSize; i++)
+	{
+		printf("IL offset: %x inst: 0x%08x\n", i, retVal.tDT.instAddr[i]);
+	}
 
 	free(pLocals);
 }

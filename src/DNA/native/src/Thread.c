@@ -240,7 +240,6 @@ I32 Thread_Execute() {
 			}
 		}
 	}
-
 }
 
 tThread* Thread_GetCurrent() {

@@ -43,7 +43,8 @@ tJITCodeInfo jitCodeInfo[JIT_OPCODE_MAXNUM];
 tJITCodeInfo jitCodeGoNext;
 
 // Get the next op-code
-#define GET_OP() *(pCurOp++)
+#define GET_OP() *(pCurOp++); \
+//printf("GET_OP Executing instruction at: 0x%08x\n", pCurOp - 1)
 
 // Push a PTR value on the top of the stack
 #define PUSH_PTR(ptr) *(PTR*)pCurEvalStack = (PTR)(ptr); pCurEvalStack += sizeof(void*)
@@ -178,7 +179,8 @@ U32 opcodeNumUses[JIT_OPCODE_MAXNUM];
 
 #else
 
-#define OPCODE_USE(op)
+#define OPCODE_USE(op) \
+printf("OPCODE_USE Executing instruction at: 0x%08x\n", pCurOp - 1)
 
 #endif
 
@@ -199,14 +201,16 @@ U32 opcodeNumUses[JIT_OPCODE_MAXNUM];
 	{ __asm mov edi, pCurOp \
 	__asm add edi, 4 \
 	__asm mov pCurOp, edi \
-	__asm jmp DWORD PTR [edi - 4] }
+	__asm jmp DWORD PTR [edi - 4] }; \
+//printf("GO_NEXT Executing instruction at: 0x%08x\n", pCurOp - 1)
 
 #endif
 #endif
 
 #define GO_NEXT_CHECK() \
 	if (--numInst == 0) goto done; \
-	GO_NEXT()
+	GO_NEXT(); \
+//printf("GO_NEXT_CHECK Executing instruction at: 0x%08x\n", pCurOp - 1)
 
 #define GET_LABELS(op) \
 	GET_LABEL(pAddr, op##_start); \
